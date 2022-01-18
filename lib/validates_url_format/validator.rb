@@ -36,19 +36,14 @@ module ValidatesUrlFormat
 
     DEFAULT_SCHEMES = %w(http https)
 
-    def valid?(value, options)
+    attr_accessor :options
+
+    def initialize(options)
       @options = options
-      schemes = (options[:schemes] || DEFAULT_SCHEMES).map(&:to_s)
-
-      return [false, :nil_or_blank_url] if not_allowed_nil_or_blank?(value)
-      return [true, :valid_url] if value.nil? || value.blank?
-
-      validate_url(value, schemes)
     end
 
-    private
-
-    def validate_url(value, schemes)
+    def validate(value)
+      schemes = (options[:schemes] || DEFAULT_SCHEMES).map(&:to_s)
       encoded_value = URI.encode(value)
       uri = URI.parse(encoded_value)
       host = uri && uri.host && URI.decode(uri.host)
@@ -78,17 +73,19 @@ module ValidatesUrlFormat
       [false, :invalid_url]
     end
 
+    private
+
     def not_allowed_nil_or_blank?(value)
-      (value.nil? && !@options[:allow_nil]) ||
-        (value.blank? && !@options[:allow_blank])
+      (value.nil? && !options[:allow_nil]) ||
+        (value.blank? && !options[:allow_blank])
     end
 
     def filter_local?
-      @options[:no_local]
+      options[:no_local]
     end
 
     def check_by_publicsuffix?
-      @options[:public_suffix]
+      options[:public_suffix]
     end
 
     def ipv4_local_address?(value)

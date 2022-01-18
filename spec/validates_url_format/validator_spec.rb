@@ -2,7 +2,7 @@ RSpec.describe 'URL format validation' do
   let(:url) { 'http://example.com' }
   let(:options) { {} }
 
-  subject { ValidatesUrlFormat::Validator.new.valid?(url, options) }
+  subject { ValidatesUrlFormat::Validator.new(options).validate(url) }
 
   it 'returns success is_valid status and valid message' do
     expect(subject).to eq([true, :valid_url])

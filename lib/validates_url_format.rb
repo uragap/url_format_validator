@@ -23,9 +23,9 @@ module ActiveModel
       end
 
       def validate_each(record, attribute, value)
-        return record.errors.add(attribute, options.dig(:messages, :valid), value: value) unless value.is_a?(String)
+        return record.errors.add(attribute, options.dig(:messages, :invalid_url), value: value) if value.blank? || !value.is_a?(String)
 
-        is_valid, message = ValidatesUrlFormat::Validator.new.valid?(value, options)
+        is_valid, message = ValidatesUrlFormat::Validator.new(options).validate(value)
         record.errors.add(attribute, options.dig(:messages, message), value: value) unless is_valid
       end
     end
@@ -39,7 +39,7 @@ module ActiveModel
       #  end
       #
       # Configuration options:
-      #   :messages - A custom error messages (default is: 'is not a valid URL').
+      #   :messages - A custom error messages (default is DEFAULT_MESSAGES).
       #   :allow_nil - If set to true, skips this validation if the attribute is nil (default is false).
       #   :allow_blank - If set to true, skips this validation if the attribute is blank (default is false).
       #   :schemes - Array of URI schemes to validate against. (default is ['http', 'https'])

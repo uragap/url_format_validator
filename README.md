@@ -23,15 +23,6 @@ gem install validates_url_format
 
 ## Usage
 
-```ruby
-# options without :messages
-ValidatesUrlFormat::Validator.new.valid?(url, options)
-
-# returns array [is_valid(true or false), message symbol]
-# message symbols: :valid_url, :invalid_url, :nil_or_blank_url, :invalid_scheme,
-#   :invalid_userinfo, #local_url, #space_symbol, :public_suffix
-```
-
 ### With ActiveRecord
 ```ruby
 class Model < ActiveRecord::Base
@@ -66,6 +57,21 @@ Configuration options:
       space_symbol: 'a URL has space symbol',
       public_suffix: 'a URL is invalid by public suffix'
     }
+- :allow_nil - If set to true, skips this validation if the attribute is nil (default is false).
+- :allow_blank - If set to true, skips this validation if the attribute is blank (default is false).
+- :schemes - Array of URI schemes to validate against. (default is ['http', 'https'])
+- :public_suffix - If set to true, validates domain name by public suffix. (default is false)
+- :no_local - If set to true, filtrates local adresses. (default is false)
+
+### Plain Ruby
+
+```ruby
+ValidatesUrlFormat::Validator.new(options).validate(value)
+```
+Returns array [is_valid(true or false), message symbol]
+Message symbols: :valid_url, :invalid_url, :nil_or_blank_url, :invalid_scheme,
+                 :invalid_userinfo, #local_url, #space_symbol, :public_suffix
+Options:
 - :allow_nil - If set to true, skips this validation if the attribute is nil (default is false).
 - :allow_blank - If set to true, skips this validation if the attribute is blank (default is false).
 - :schemes - Array of URI schemes to validate against. (default is ['http', 'https'])
