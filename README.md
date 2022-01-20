@@ -68,12 +68,10 @@ Configuration options:
 ```ruby
 ValidatesUrlFormat::Validator.new(options).validate(value)
 ```
-Returns array [is_valid(true or false), message symbol]
+Returns hash { is_valid: (true or false), message:  message_symbol }
 Message symbols: :valid_url, :invalid_url, :nil_or_blank_url, :invalid_scheme,
-                 :invalid_userinfo, #local_url, #space_symbol, :public_suffix
+                 :invalid_userinfo, :local_url, :space_symbol, :public_suffix
 Options:
-- :allow_nil - If set to true, skips this validation if the attribute is nil (default is false).
-- :allow_blank - If set to true, skips this validation if the attribute is blank (default is false).
 - :schemes - Array of URI schemes to validate against. (default is ['http', 'https'])
 - :public_suffix - If set to true, validates domain name by public suffix. (default is false)
 - :no_local - If set to true, filtrates local adresses. (default is false)

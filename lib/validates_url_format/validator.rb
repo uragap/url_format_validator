@@ -38,42 +38,48 @@ module ValidatesUrlFormat
 
     attr_accessor :options
 
-    def initialize(options)
+    def initialize(options = {})
       @options = options
     end
 
     def validate(value)
+      return result(false, :nil_or_blank_url) if value.blank?
+
       schemes = (options[:schemes] || DEFAULT_SCHEMES).map(&:to_s)
       encoded_value = URI.encode(value)
       uri = URI.parse(encoded_value)
       host = uri && uri.host && URI.decode(uri.host)
       scheme = uri && uri.scheme&.downcase
 
-      return [false, :invalid_scheme] unless host && scheme && schemes.include?(scheme)
-      return [false, :invalid_userinfo] unless uri.userinfo.nil? || uri.userinfo.match?(USERINFO_REGEXP)
+      return result(false, :invalid_scheme) unless host && scheme && schemes.include?(scheme)
+      return result(false, :invalid_userinfo) unless uri.userinfo.nil? || uri.userinfo.match?(USERINFO_REGEXP)
 
       case host
       when IPv6_REGEXP
         # TODO: Add IPv6 local addresses filtration
-        [true, :valid_url]
+        result(true, :valid_url)
       when IPv4_REGEXP
-        return [false, :local_url] if filter_local? && ipv4_local_address?(host)
+        return result(false, :local_url) if filter_local? && ipv4_local_address?(host)
 
-        [true, :valid_url]
+        result(true, :valid_url)
       when DOMAINNAME_REGEXP
-        return [false, :space_symbol] if value.include?(' ')
-        return [false, :local_url] if filter_local? && domainname_local_address?(host)
-        return [false, :public_suffix] if check_by_publicsuffix? && !PublicSuffix.valid?(host, :default_rule => nil)
+        return result(false, :space_symbol) if value.include?(' ')
+        return result(false, :local_url) if filter_local? && domainname_local_address?(host)
+        return result(false, :public_suffix) if check_by_publicsuffix? && !PublicSuffix.valid?(host, :default_rule => nil)
 
-        [true, :valid_url]
+        result(true, :valid_url)
       else
-        [false, :invalid_url]
+        result(false, :invalid_url)
       end
     rescue URI::InvalidURIError
-      [false, :invalid_url]
+      result(false, :invalid_url)
     end
 
     private
+
+    def result(is_valid, message)
+      { is_valid: is_valid, message: message }
+    end
 
     def not_allowed_nil_or_blank?(value)
       (value.nil? && !options[:allow_nil]) ||
