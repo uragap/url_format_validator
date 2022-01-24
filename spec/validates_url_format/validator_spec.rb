@@ -4,15 +4,15 @@ RSpec.describe 'URL format validation' do
 
   subject { ValidatesUrlFormat::Validator.new(options).validate(url) }
 
-  it 'returns success is_valid status and valid message' do
-    expect(subject).to eq({ is_valid: true, message: :valid_url })
+  it 'returns success valid status and valid message' do
+    expect(subject).to eq({ valid: true, message: :valid_url })
   end
 
   context 'when wrong url' do
     let(:url) { 'ftp://example.com' }
 
-    it 'returns failed is_valid status and error message' do
-      expect(subject).to eq({ is_valid: false, message: :invalid_scheme })
+    it 'returns failed valid status and error message' do
+      expect(subject).to eq({ valid: false, message: :invalid_scheme })
     end
   end
 
@@ -21,15 +21,15 @@ RSpec.describe 'URL format validation' do
     let(:options) { { schemes: ['ftp'] } }
 
     it 'validates considering options' do
-      expect(subject).to eq({ is_valid: true, message: :valid_url })
+      expect(subject).to eq({ valid: true, message: :valid_url })
     end
   end
 
   context 'nil value' do
     let(:url) { nil }
 
-    it 'returns failed is_valid status and error message' do
-      expect(subject).to eq({ is_valid: false, message: :nil_or_blank_url })
+    it 'returns failed valid status and error message' do
+      expect(subject).to eq({ valid: false, message: :nil_or_blank_url })
     end
   end
 end

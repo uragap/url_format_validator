@@ -25,7 +25,7 @@ module ActiveModel
       def validate_each(record, attribute, value)
         return record.errors.add(attribute, options.dig(:messages, :invalid_url), value: value) unless value.is_a?(String)
         validation_result = ValidatesUrlFormat::Validator.new(options).validate(value)
-        record.errors.add(attribute, options.dig(:messages, validation_result[:message]), value: value) unless validation_result[:is_valid]
+        record.errors.add(attribute, options.dig(:messages, validation_result[:message]), value: value) unless validation_result[:valid]
       end
     end
 

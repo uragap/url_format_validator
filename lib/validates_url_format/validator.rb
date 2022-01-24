@@ -77,8 +77,8 @@ module ValidatesUrlFormat
 
     private
 
-    def result(is_valid, message)
-      { is_valid: is_valid, message: message }
+    def result(valid, message)
+      { valid: valid, message: message }
     end
 
     def not_allowed_nil_or_blank?(value)

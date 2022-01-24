@@ -68,7 +68,7 @@ Configuration options:
 ```ruby
 ValidatesUrlFormat::Validator.new(options).validate(value)
 ```
-Returns hash { is_valid: (true or false), message:  message_symbol }
+Returns hash { valid: (true or false), message:  message_symbol }
 Message symbols: :valid_url, :invalid_url, :nil_or_blank_url, :invalid_scheme,
                  :invalid_userinfo, :local_url, :space_symbol, :public_suffix
 Options:
