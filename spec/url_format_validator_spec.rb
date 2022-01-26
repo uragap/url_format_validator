@@ -56,7 +56,9 @@ RSpec.describe 'URL format validation using Active Record' do
     'http://user:pass@example.com',
     'http://user:@example.com',
     'http://u:u:u@example.com',  # password has : inside
-    'http://u@example.com'       # userinfo contains only username
+    'http://u@example.com',      # userinfo contains only username
+    'http://localhost:3128',
+    'http://ecom.com/pa^h?foo=bar'
   ].each do |url|
     it "allows url #{url}" do
       model.url = url
@@ -67,13 +69,14 @@ RSpec.describe 'URL format validation using Active Record' do
   [
     nil, 1, "", " ", "url",
     "www.example.com",                            # without scheme
+    'mailto:foo@example.org',
     'http://',                                    # only a scheme
     'http:/',                                     # without a host
     "http://ex ample.com",                        # space in the hostname
     "http://example.com/foo bar",
     "http://example.com/some/? doodads=ok",       # space in the querystring
     'http://256.0.0.1',                           # wrong number in ip
-    'http://r?ksmorgas.com',                      # wrong symbol in the hostname
+    'http://e?om.com',                            # wrong symbol
     'ftp://localhost',                            # wrong scheme
     "http://example",                             # without top level domain
     "http://example.c",                           # too short TLD length
@@ -112,7 +115,7 @@ RSpec.describe 'URL format validation using Active Record' do
       'http://example.home',
       'http://example.lan',
       'http://example.private',
-      'http://localhost'
+      'http://localhost:3008'
     ].each do |url|
       it "does not allow local url #{url}" do
         model.url = url
@@ -145,7 +148,6 @@ RSpec.describe 'URL format validation using Active Record' do
 
     it 'allows nil url' do
       model.url = nil
-      # require 'pry-byebug'; binding.pry
       expect(model).to be_valid
     end
   end

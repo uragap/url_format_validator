@@ -30,6 +30,7 @@ module ValidatesUrlFormat
     DOMAINNAME_REGEXP = %r{
       \A(xn--)?[#{ACCEPTED_SCRIPTS}_]+([-._][#{ACCEPTED_SCRIPTS}]+)*\.[^\d&&[#{ACCEPTED_SCRIPTS}]]{2,63}\.?\z
     }x
+    ONE_LEVEL_DOMAINNAME_REGEX = %r{\A[^.&&[#{ACCEPTED_SCRIPTS}]]*\z}
     USERINFO_REGEXP = %r{\A[^:&&[#{ACCEPTED_SCRIPTS}]]+:?[#{ACCEPTED_SCRIPTS}]*\z}
 
     LOCAL_TOP_DOMAINS = %W(local localhost intranet internet internal private corp home lan)
@@ -60,6 +61,11 @@ module ValidatesUrlFormat
         result(true, :valid_url)
       when IPv4_REGEXP
         return result(false, :local_url) if filter_local? && ipv4_local_address?(host)
+
+        result(true, :valid_url)
+      when ONE_LEVEL_DOMAINNAME_REGEX
+        return result(false, :invalid_url) unless domainname_local_address?(host)
+        return result(false, :local_url) if filter_local?
 
         result(true, :valid_url)
       when DOMAINNAME_REGEXP
@@ -109,8 +115,6 @@ module ValidatesUrlFormat
     end
 
     def domainname_local_address?(value)
-      return true unless value.include?('.')
-
       top_level_domain = value.split('.').last
       return true if LOCAL_TOP_DOMAINS.include?(top_level_domain)
 
