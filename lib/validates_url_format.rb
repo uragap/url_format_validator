@@ -17,7 +17,8 @@ module ActiveModel
       DEFAULT_SCHEMES = %w(http https)
 
       def initialize(options)
-        options.reverse_merge!(messages: DEFAULT_MESSAGES, no_local: false, public_suffix: false)
+        options[:messages] = (options[:messages] || {}).reverse_merge(DEFAULT_MESSAGES)
+        options.reverse_merge!(no_local: false, public_suffix: false)
 
         super(options)
       end
